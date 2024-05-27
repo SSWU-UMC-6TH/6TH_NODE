@@ -1,5 +1,2 @@
-# 모든 텍스트 파일의 줄 끝을 자동으로 처리
-* text=auto
-
-# Unix 스타일 줄 끝을 강제
-* text eol=lf
+# .gitattributes 파일에 추가
+node_modules/** -text
