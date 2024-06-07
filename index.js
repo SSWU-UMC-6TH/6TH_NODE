@@ -8,8 +8,9 @@ import { userRouter } from './src/routes/user.route.js';
 import { specs } from './config/swagger.config.js';
 import SwaggerUi from 'swagger-ui-express';
 import bodyParser from 'body-parser';
-// import storeRoutes from './src/routes/storeRoutes.js';
-// import missionRoutes from './src/routes/missionRoutes.js';
+import storeRoutes from './src/routes/storeRoutes.js';
+import missionRoutes from './src/routes/missionRoutes.js';
+import { BaseError } from './config/error.js';
 
 
 dotenv.config();    // .env 파일 사용 (환경 변수 관리)
@@ -30,26 +31,32 @@ app.use(express.urlencoded({extended: false})); // 단순 객체 문자열 형�
 // swagger
 app.use('/api-docs', SwaggerUi.serve, SwaggerUi.setup(specs));
 
-// router setting
-app.use('/temp', tempRouter);
-app.use('/user', userRouter);
 // index.js
 
 app.use((req, res, next) => {
     const err = new BaseError(status.NOT_FOUND);
     next(err);
 });
-
+// app.use((req, res, next) => {
+//   const err = new BaseError({
+//       status: status.NOT_FOUND,
+//       message: "Not Found"
+//   });
+//   next(err);
+// });
 //mission
 app.use(bodyParser.json());
-// app.use('/stores', storeRoutes);
-// app.use('/missions', missionRoutes);
+app.use('/stores', storeRoutes);
+app.use('/missions', missionRoutes);
 app.use((err, req, res, next) => {
+  
     const statusCode = err.data ? err.data.status : 500; // `data`가 없는 경우 500으로 처리
     const responseMessage = err.data ? response(err.data) : response(status.INTERNAL_SERVER_ERROR);
     
     res.locals.message = err.message;   
     res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
+    // console.log(statusCode);
+    console.log(err);
     res.status(statusCode).send(responseMessage);
 });
 

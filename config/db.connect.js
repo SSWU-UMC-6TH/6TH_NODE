@@ -15,3 +15,15 @@ export const pool = mysql.createPool({
     connectionLimit: 10,        // 몇 개의 커넥션을 가지게끔 할 것인지
     queueLimit: 0,              // getConnection에서 오류가 발생하기 전에 Pool에 대기할 요청의 개수 한도
 });
+
+// async function checkDatabaseConnection() {
+//   try {
+//       const connection = await pool.getConnection();
+//       console.log('데이터베이스 연결 성공!');
+//       connection.release();  // 연결 성공 후, 연결을 풀에 반환
+//   } catch (error) {
+//       console.error('데이터베이스 연결 실패:', error);
+//   }
+// }
+
+// checkDatabaseConnection();
