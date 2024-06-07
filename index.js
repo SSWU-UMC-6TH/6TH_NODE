@@ -32,22 +32,15 @@ app.use(express.urlencoded({extended: false})); // 단순 객체 문자열 형�
 app.use('/api-docs', SwaggerUi.serve, SwaggerUi.setup(specs));
 
 // index.js
+app.use(bodyParser.json());
+app.use('/stores', storeRoutes);
+app.use('/missions', missionRoutes);
 
 app.use((req, res, next) => {
     const err = new BaseError(status.NOT_FOUND);
     next(err);
 });
-// app.use((req, res, next) => {
-//   const err = new BaseError({
-//       status: status.NOT_FOUND,
-//       message: "Not Found"
-//   });
-//   next(err);
-// });
-//mission
-app.use(bodyParser.json());
-app.use('/stores', storeRoutes);
-app.use('/missions', missionRoutes);
+
 app.use((err, req, res, next) => {
   
     const statusCode = err.data ? err.data.status : 500; // `data`가 없는 경우 500으로 처리
@@ -55,8 +48,6 @@ app.use((err, req, res, next) => {
     
     res.locals.message = err.message;   
     res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
-    // console.log(statusCode);
-    console.log(err);
     res.status(statusCode).send(responseMessage);
 });
 

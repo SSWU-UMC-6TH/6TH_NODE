@@ -8,7 +8,6 @@ export const addStore = ({ name, location, description }) => {
         description
     };
     stores.push(newStore);
-    console.log("addstore");
     return newStore;
 };
 

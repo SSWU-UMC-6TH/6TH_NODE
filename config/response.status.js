@@ -23,5 +23,5 @@ export const status = {
     ARTICLE_NOT_FOUND: {status: StatusCodes.NOT_FOUND, "isSuccess": false, "code": "ARTICLE4001", "message": "게시글이 없습니다."},
     
     EMAIL_ALREADY_EXIST: {status: StatusCodes.BAD_REQUEST, "isSuccess": false, "code":"EXISTING000", "message":"이미 가입된 이메일이 존재합니다."},
-    NOT_FOUND : {status: StatusCodes.BAD_REQUEST, "isSuccess": false, "code": "ERROR404", "message": "잘못된 요청입니다."},
+    NOT_FOUND : {status: StatusCodes.NOT_FOUND, "isSuccess": false, "code": "ERROR404", "message": "잘못된 요청입니다."},
 };

@@ -10,7 +10,9 @@ const missions = [];
 
 export const createStore = async (data) => {
     const storeDTO = new StoreDTO(data);
-    return addStore(storeDTO);
+    const newStore = addStore(storeDTO);  // 가정: addStore 함수가 storeDTO를 stores 배열에 추가하고 새 store를 반환합니다.
+    stores.push(newStore);  // 새로운 store를 stores 배열에 추가합니다.
+    console.log("새로운 store가 추가되었습니다:", newStore);
 };
 
 export const createReview = async (storeId, rating, comment) => {
@@ -28,6 +30,7 @@ export const createReview = async (storeId, rating, comment) => {
         comment
     };
     reviews.push(newReview);
+    console.log("새로운 review가 추가되었습니다:", newReview);
     return newReview;
 };
 
@@ -43,5 +46,11 @@ export const createMission = async (storeId, missionDescription, reward) => {
         reward
     };
     missions.push(newMission);
+    console.log("새로운 미션이 추가되었습니다:", newMission);
+    console.log("미션 추가 후 상태:", missions); // 미션 추가 후 상태 로그
     return newMission;
+};
+
+export const getMissions = () => {
+    return missions;
 };
