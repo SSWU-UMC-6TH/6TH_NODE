@@ -1,0 +1,106 @@
+paths:
+  /stores/{storeId}/reviews:
+    post:
+      tags:
+        - Store
+      summary: 가게에 리뷰 추가하기
+      parameters:
+        - in: path
+          name: storeId
+          required: true
+          schema:
+            type: integer
+          description: 가게 ID
+          example: 123
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: integer
+                  description: 리뷰 평점
+                  example: 5
+                comment:
+                  type: string
+                  description: 리뷰 내용
+                  example: "맛있는 음식이었습니다!"
+      responses:
+        "200":
+          description: 리뷰 추가 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  isSuccess:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 2000
+                  message:
+                    type: string
+                    example: "Review added successfully"
+                  data:
+                    type: object
+                    properties:
+                      reviewId:
+                        type: integer
+                        description: 추가된 리뷰 ID
+                        example: 456
+                      storeId:
+                        type: integer
+                        description: 가게 ID
+                        example: 123
+                      rating:
+                        type: integer
+                        description: 리뷰 평점
+                        example: 5
+                      comment:
+                        type: string
+                        description: 리뷰 내용
+                        example: "맛있는 음식이었습니다!"
+        "400":
+          description: 잘못된 요청
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 400
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: COMMON001
+                  message:
+                    type: string
+                    example: 잘못된 요청입니다
+        "500":
+          description: 서버 에러
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 500
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: COMMON000
+                  message:
+                    type: string
+                    example: 서버 에러, 관리자에게 문의 바랍니다.
