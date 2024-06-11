@@ -12,7 +12,7 @@ const options = {
         host: 'localhost:3000',
         basepath: '../'
     },
-    apis: ['./src/routes/*.js', './swagger/user.swagger.yaml']
+    apis: ['./src/routes/*.js', './swagger/user.swagger.yaml', './swagger/store.swagger.yaml', './swagger/review.swagger.yaml']
 };
 
 export const specs = SwaggerJsdoc(options);

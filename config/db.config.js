@@ -6,15 +6,15 @@ dotenv.config();
 
 
 export const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    port: process.env.DB_PORT,
-    database: process.env.DB_DATABASE, 
-    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    port: process.env.DB_PORT || 3306,
+    database: process.env.DB_DATABASE || 'workbook', 
+    password: process.env.DB_PASSWORD || 'root',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
-}); 
+});
 async function checkDatabaseConnection() {
     try {
         const connection = await pool.getConnection();

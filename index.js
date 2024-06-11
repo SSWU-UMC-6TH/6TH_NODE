@@ -11,6 +11,7 @@ import SwaggerUi from 'swagger-ui-express';
 import bodyParser from 'body-parser';
 import storeRoutes from './src/routes/storeRoutes.js';
 import missionRoutes from './src/routes/missionRoutes.js';
+import { storeRouter } from './src/routes/store.route.js';
 
 
 dotenv.config();    // .env 파일 사용 (환경 변수 관리)
@@ -27,7 +28,10 @@ app.use('/user', userRouter);
 // router setting
 app.use('/temp', tempRouter);
 app.use(express.urlencoded({extended: false})); // 단순 객체 문자열 형태로 본문 데이터 해석
-
+// chapter10
+app.use('/temp', tempRouter);
+app.use('/user', userRouter);
+app.use('/:storeId', storeRouter);
 // swagger
 app.use('/api-docs', SwaggerUi.serve, SwaggerUi.setup(specs));
 

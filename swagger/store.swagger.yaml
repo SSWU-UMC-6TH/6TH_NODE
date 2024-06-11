@@ -1,0 +1,102 @@
+openapi: 3.0.0
+info:
+  title: Store API
+  version: 1.0.0
+  description: API for retrieving store missions
+servers:
+  - url: http://localhost:3000/api
+paths:
+  /stores/{storeId}/missions:
+    get:
+      tags:
+        - Store
+      summary: 특정 매장의 미션 조회
+      description: Retrieve a paginated list of missions for a specific store.
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the store
+        - name: page
+          in: query
+          schema:
+            type: integer
+          required: false
+          description: Page number, starts from 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+          required: false
+          description: Number of items per page
+      responses:
+        '200':
+          description: A list of missions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalItems:
+                    type: integer
+                    description: Total number of missions
+                  missions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Mission'
+                  totalPages:
+                    type: integer
+                    description: Total number of pages
+                  currentPage:
+                    type: integer
+                    description: Current page number
+        '404':
+          description: Store not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Store not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+components:
+  schemas:
+    Mission:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The mission ID
+        name:
+          type: string
+          description: The mission name
+        reward:
+          type: integer
+          description: The reward for completing the mission
+        deadline:
+          type: string
+          format: date
+          description: The deadline for the mission
+        mission_spec:
+          type: string
+          description: The detailed specification of the mission
+        store_id:
+          type: integer
+          description: The ID of the store
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time when the mission was created

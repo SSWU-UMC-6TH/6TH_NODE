@@ -1,0 +1,139 @@
+openapi: 3.0.0
+info:
+  title: Mission API
+  version: 1.0.0
+  description: A simple Express Mission API
+servers:
+  - url: http://localhost:3000/api
+paths:
+  /users/{userId}/missions:
+    get:
+      summary: 진행중인 미션
+      description: Retrieve a paginated list of missions that a user is currently undertaking.
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+          description: Numeric ID of the user
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number, starts from 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of missions per page
+      responses:
+        '200':
+          description: A list of missions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalItems:
+                    type: integer
+                  userMissions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserMission'
+                  totalPages:
+                    type: integer
+                  currentPage:
+                    type: integer
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /users/{userId}/missions/{missionId}/complete:
+    patch:
+      summary: 진행 완료
+      description: Mark a specific mission for a user as completed.
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+          description: Numeric ID of the user
+        - in: path
+          name: missionId
+          required: true
+          schema:
+            type: integer
+          description: Numeric ID of the mission
+      responses:
+        '200':
+          description: Mission marked as completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Mission marked as completed.
+        '404':
+          description: Mission not found or already completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Mission not found or already completed.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Error completing mission.
+components:
+  schemas:
+    UserMission:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        mission_id:
+          type: integer
+        status:
+          type: string
+        started_at:
+          type: string
+          format: date-time
+        mission:
+          $ref: '#/components/schemas/Mission'
+    Mission:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        reward:
+          type: integer
+        deadline:
+          type: string
+          format: date
+        mission_spec:
+          type: string
+        store_id:
+          type: integer
+       
