@@ -11,6 +11,8 @@ import bodyParser from 'body-parser';
 import storeRoutes from './src/routes/storeRoutes.js';
 import missionRoutes from './src/routes/missionRoutes.js';
 import { BaseError } from './config/error.js';
+import { storeRouter } from './src/routes/storeRoutes.js';
+import reviewRoutes from './src/routes/reviewRoutes.js';
 
 
 dotenv.config();    // .env 파일 사용 (환경 변수 관리)
@@ -24,8 +26,10 @@ app.use(express.static('public'));          // 정적 파일 접근
 app.use(express.json());                    // request의 본문을 json으로 해석할 수 있도록 함 (JSON 형태의 요청 body를 파싱하기 위함)
 app.use(express.urlencoded({extended: false})); // 단순 객체 문자열 형태로 본문 데이터 해석
 app.use('/user', userRouter);
-// router setting
 app.use('/temp', tempRouter);
+app.use('/:storeId', storeRouter);
+app.use('/api', missionRoutes);
+
 app.use(express.urlencoded({extended: false})); // 단순 객체 문자열 형태로 본문 데이터 해석
 
 // swagger
@@ -35,6 +39,7 @@ app.use('/api-docs', SwaggerUi.serve, SwaggerUi.setup(specs));
 app.use(bodyParser.json());
 app.use('/stores', storeRoutes);
 app.use('/missions', missionRoutes);
+app.use('/reviews', reviewRoutes);
 
 app.use((req, res, next) => {
     const err = new BaseError(status.NOT_FOUND);

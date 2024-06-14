@@ -27,12 +27,7 @@ export const challengeExistingMission =async(missionId)=>{
     return newChallenge;
 };
 
-export const addMission= async(description, reward)=>{
-    const newMission = {
-        id: missions.length+1,
-        description,
-        reward
-    };
-    missions.push(newMission);
+export const addMission = async (storeId, description, reward) => {
+    const newMission = await addMissionToStore(storeId, description, reward); // storeService.js에서 미션 추가 함수 사용
     return newMission;
-}
+};

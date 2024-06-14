@@ -1,0 +1,39 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Store Reviews API
+  description: API to manage reviews for stores
+
+paths:
+  /reviews:
+    get:
+      summary: Retrieve reviews for a specific store
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          type: integer
+          description: ID of the store to retrieve reviews for
+      responses:
+        '200':
+          description: A list of reviews for the specified store
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: Review ID
+                storeId:
+                  type: integer
+                  description: ID of the store
+                rating:
+                  type: integer
+                  description: Rating given by the user
+                comment:
+                  type: string
+                  description: Comment provided by the user
+        '404':
+          description: No reviews found for the specified store
+

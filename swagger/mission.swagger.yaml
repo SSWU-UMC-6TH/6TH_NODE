@@ -1,0 +1,38 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Store Missions API
+  description: API to manage missions for stores
+
+paths:
+  /stores/{storeId}/missions:
+    get:
+      summary: Retrieve missions for a specific store
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          type: integer
+          description: ID of the store to retrieve missions for
+      responses:
+        '200':
+          description: A list of missions for the specified store
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: Mission ID
+                storeId:
+                  type: integer
+                  description: ID of the store
+                description:
+                  type: string
+                  description: Description of the mission
+                reward:
+                  type: string
+                  description: Reward for completing the mission
+        '404':
+          description: No missions found for the specified store
