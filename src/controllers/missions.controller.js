@@ -47,3 +47,65 @@ export const addMissionChallenge = async (req, res, next) => {
     }
   }
 };
+
+export const getMyMissions = async (req, res) => {
+  try {
+    const { cursor } = req.query;  // cursor를 쿼리 파라미터로
+    const userId = req.user.id;    
+
+    // 서비스 계층에 데이터 요청
+    const { missions, nextCursor } = await MissionService.getMyMissions(userId, cursor);
+
+    // 응답 데이터 구조화 (dto 대신)
+    const formattedMissions = missions.map(mission => ({
+      id: mission.id,
+      title: mission.title,
+      description: mission.description,
+      dueDate: mission.due_date,
+      createdAt: mission.created_at
+    }));
+
+    // 성공 응답
+    res.status(status.SUCCESS.status).send(response(status.SUCCESS, {
+      missions: formattedMissions,
+      nextCursor: nextCursor
+    }));
+  } catch (error) {
+    // 오류 응답
+    console.error("미션 목록 조회 중 오류 발생:", error);
+    res.status(status.INTERNAL_SERVER_ERROR.status).send(
+      response(status.INTERNAL_SERVER_ERROR, error.message)
+    );
+  }
+};
+
+export const getStoreMissions = async (req, res) => {
+  try {
+    const { storeId } = req.params;  // storeId 가져오기
+    const { cursor } = req.query;    // cursor 가져오기
+
+    // 서비스 계층에 데이터 요청
+    const { missions, nextCursor } = await MissionService.getStoreMissions(storeId, cursor);
+
+    // 응답 데이터 구조화 (dto대신)
+    const formattedMissions = missions.map(mission => ({
+      id: mission.id,
+      title: mission.title,
+      description: mission.description,
+      dueDate: mission.due_date,
+      createdAt: mission.created_at
+    }));
+
+    // 성공 응답
+    res.status(status.SUCCESS.status).send(response(status.SUCCESS, {
+      missions: formattedMissions,
+      nextCursor: nextCursor
+    }));
+  } catch (error) {
+    // 오류 응답
+    console.error("미션 목록 조회 중 오류 발생:", error);
+    res.status(status.INTERNAL_SERVER_ERROR.status).send(
+      response(status.INTERNAL_SERVER_ERROR, error.message)
+    );
+  }
+};

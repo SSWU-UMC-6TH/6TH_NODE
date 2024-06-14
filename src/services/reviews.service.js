@@ -1,4 +1,4 @@
-const ReviewDAO = require('../models/review.dao');
+const ReviewDAO = require('../../models/reviews.dao');
 const CreateReviewDto = require('../dtos/review.dto');
 
 class ReviewService {
@@ -13,6 +13,15 @@ class ReviewService {
       const reviewId = await ReviewDAO.createReview(reviewDto);
       return reviewId;
    }
+
+   static async getMyReviews(userId, cursor) {
+      const limit = 10;
+      const reviews = await ReviewDAO.getMyReviews(userId, limit, cursor);
+      const nextCursor = reviews.length === limit ? reviews[reviews.length - 1].id : null;
+  
+      return { reviews, nextCursor };
+    }
 }
+
 
 module.exports = ReviewService;

@@ -12,3 +12,6 @@ app.use('/missions', missionRouter);
 
 // 리뷰 관련 라우터
 app.use('/', reviewRouter);
+
+//가게 관련 라우터 
+app.use('/:storeId',storeRouter);

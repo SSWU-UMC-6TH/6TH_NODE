@@ -27,6 +27,22 @@ class MissionService {
       const memberMissionId = await MissionDAO.createMemberMission(missionDto.member_id, missionDto.mission_id);
       return memberMissionId;
    }
+
+   static async getMyMissions(userId, cursor) {
+      const limit = 10;  // 한 페이지당 가져올 미션의 수
+      const missions = await MissionDAO.getMyMissions(userId, limit, cursor);
+      const nextCursor = missions.length === limit ? missions[missions.length - 1].id : null;
+
+   return { missions, nextCursor };
+   }
+
+   static async getStoreMissions(storeId, cursor) {
+   const limit = 10;  // 한 페이지당 가져올 미션의 수
+   const missions = await MissionDAO.getStoreMissions(storeId, limit, cursor);
+   const nextCursor = missions.length === limit ? missions[missions.length - 1].id : null;
+
+   return { missions, nextCursor };
+   }
 }
 
 module.exports = MissionService;

@@ -2,7 +2,8 @@ import { response } from "../../config/response.status.js";
 import { status } from "../../config/response.status.js";
 import ReviewService from "../services/reviews.service.js";
 
-export const addReview = async (req, res, next) => {
+
+exports.addReview = async (req, res, next) => {
   try {
     const { member_id, store_id, body, score } = req.body;
 
@@ -47,5 +48,24 @@ export const addReview = async (req, res, next) => {
           )
         );
     }
+  }
+};
+
+exports.getMyReviews = async (req, res) => {
+  try {
+    const { page } = req.query;
+    const result = await ReviewService.getMyReviews(req.user.id, page);
+
+    
+    
+    res.status(status.SUCCESS.status).send({
+      ...status.SUCCESS,
+      data: result
+    });
+  } catch (error) {
+    res.status(status.INTERNAL_SERVER_ERROR.status).send({
+      ...status.INTERNAL_SERVER_ERROR,
+      message: error.message
+    });
   }
 };

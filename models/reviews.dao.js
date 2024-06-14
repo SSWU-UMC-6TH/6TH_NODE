@@ -14,6 +14,22 @@ class ReviewDAO {
         );
         return result.insertId;
     }
+
+    static async getMyReviews(userId, limit, cursor) {
+        let query = 'SELECT * FROM review WHERE member_id = ?';
+        const params = [userId];
+    
+        if (cursor) {
+        query += ' AND id < ?';
+        params.push(cursor);
+    }
+
+    query += ' ORDER BY id DESC LIMIT ?';
+    params.push(limit);
+
+    const [rows] = await db.execute(query, params);
+    return rows;
+    }
 }
 
 module.exports = ReviewDAO;

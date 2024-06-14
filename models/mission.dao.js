@@ -30,6 +30,47 @@ class MissionDAO {
       );
       return result.insertId;
    }
+
+   static async getMyMissions(userId, limit, cursor) {
+   let query = `
+      SELECT m.id, m.title, m.description, m.due_date, m.created_at
+      FROM mission m
+      INNER JOIN member_mission mm ON m.id = mm.mission_id
+      WHERE mm.member_id = ?
+   `;
+   const params = [userId];
+
+   if (cursor) {
+      query += ' AND m.id < ?';
+      params.push(cursor);
+   }
+
+   query += ' ORDER BY m.id DESC LIMIT ?';
+   params.push(limit);
+
+   const [rows] = await db.execute(query, params);
+   return rows;
+   }
+
+   static async getStoreMissions(storeId, limit, cursor) {
+      let query = `
+         SELECT m.id, m.title, m.description, m.due_date, m.created_at
+         FROM mission m
+         WHERE m.store_id = ?
+      `;
+      const params = [storeId];
+
+      if (cursor) {
+         query += ' AND m.id < ?';
+         params.push(cursor);
+      }
+
+      query += ' ORDER BY m.id DESC LIMIT ?';
+      params.push(limit);
+
+      const [rows] = await db.execute(query, params);
+      return rows;
+      }
 }
 
 module.exports = MissionDAO;
