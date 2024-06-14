@@ -1,0 +1,83 @@
+paths:
+  /missions/{missionId}/challenge:
+    post:
+      tags:
+        - Mission
+      summary: 가게의 미션을 도전 중인 미션에 추가(미션 도전하기)
+      parameters:
+        - in: path
+          name: missionId
+          required: true
+          schema:
+            type: integer
+          description: 미션의 고유 ID
+          example: 123
+      responses:
+        "200":
+          description: 미션 도전 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  isSuccess:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 2000
+                  message:
+                    type: string
+                    example: "Mission challenge started successfully"
+                  data:
+                    type: object
+                    properties:
+                      missionId:
+                        type: integer
+                        description: 도전된 미션 ID
+                        example: 123
+                      challengeId:
+                        type: integer
+                        description: 도전 ID
+                        example: 456
+        "400":
+          description: 잘못된 요청
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 400
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: COMMON001
+                  message:
+                    type: string
+                    example: 잘못된 요청입니다
+        "500":
+          description: 서버 에러
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 500
+                  isSuccess:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: COMMON000
+                  message:
+                    type: string
+                    example: 서버 에러, 관리자에게 문의 바랍니다.
