@@ -1,86 +1,110 @@
-//const express = require('express')   // common JS
-import express from 'express'          // ES6
-import { tempRouter } from "./src/routes/temp.route.js";
+import express from "express";
+import dotenv from "dotenv";
+import { sequelize } from "./config/db.config.js";
 import { response } from "./config/response.js";
+import { tempRouter } from "./src/routes/temp.route.js";
+import { reviewRouter } from "./src/routes/review.route.js";
+import { storeRouter } from "./src/routes/store.route.js";
+import { missionRouter } from "./src/routes/mission.route.js";
+
+import { BaseError } from "./config/error.js";
 import { status } from "./config/response.status.js";
+import { swaggerSpec } from "./config/swagger.config.js";
+import SwaggerUi from "swagger-ui-express";
 
-import { userRouter } from './src/routes/user.route.js';
-import { specs } from './config/swagger.config.js';
-import SwaggerUi from 'swagger-ui-express';
-import YAML from 'yamljs';
+dotenv.config();
+const port = process.env.PORT || 3000;
+const app = express();
 
-import dotenv from 'dotenv';
-import cors from 'cors';
-dotenv.config(); 
+app.use(express.urlencoded({ extended: false }));
+app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(swaggerSpec));
 
-const app = express()
-const port = 3000
+// in_progress 데이터 추출 쿼리
+const inProgressQuery = `
+  SELECT * FROM mission
+`;
 
-//9주차 DB세팅
-// server setting - veiw, static, body-parser etc..
-app.set('port', process.env.PORT || 3000)   // 서버 포트 지정
-app.use(cors());                            // cors 방식 허용
-app.use(express.static('public'));          // 정적 파일 접근
-app.use(express.json());                    // request의 본문을 json으로 해석할 수 있도록 함 (JSON 형태의 요청 body를 파싱하기 위함)
-app.use(express.urlencoded({extended: false})); // 단순 객체 문자열 형태로 본문 데이터 해석
+// success 데이터 추출 쿼리
+const successQuery = `
+  SELECT * FROM mission
+`;
 
-// swagger
-app.use('/api-docs', SwaggerUi.serve, SwaggerUi.setup(specs));
+// executeQuery 함수 정의
+async function executeQuery(query, res) {
+  try {
+    const rows = await sequelize.query(query, {
+      type: sequelize.QueryTypes.SELECT,
+    });
+    res.send(rows);
+  } catch (err) {
+    console.error("Error executing query:", err);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+// server setting - view, static, body-parser etc..
+app.set("port", process.env.PORT || 3000);
+app.use(express.static("public"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // router setting
-app.use('/temp', tempRouter);
-app.use('/user', userRouter);
-
-app.use((req, res, next) => {
-    const err = new BaseError(status.NOT_FOUND);
-    next(err);
-});
-
-
-app.get("/", function (req, res) {
-    res.send("Hello World");
+app.use("/temp", tempRouter);
+app.get("/", (req, res) => {
+    res.send("Hello World!");
+  });
+  
+  app.get("/another-route", (req, res) => {
+    res.send("This is another route");
   });
 
-  // router setting
-app.use('/temp', tempRouter);
+// missions 라우터
+app.get("/missions", async (req, res) => {
+  const status = req.query.status;
 
-// 8주챠 error handling 1
-// app.use((err, req, res, next) => {
-//     console.error(err.stack)
-//     res.status(500).send(err.stack);
-// });
+  if (!status) {
+    res.status(400).send("Bad Request: 'status' parameter is missing");
+    return;
+  }
 
-//8주차 에러 헨들링 2
+  let query;
+  if (status === "in_progress") {
+    query = inProgressQuery;
+  } else if (status === "success") {
+    query = successQuery;
+  } else {
+    res.status(400).send("Bad Request: Invalid status value");
+    return;
+  }
 
-// app.use((req, res, next) => {
-//     const err = new BaseError(status.NOT_FOUND);
-//     next(err);
-// });
-
-// app.use((err, req, res, next) => {
-//     // 템플릿 엔진 변수 설정
-//     res.locals.message = err.message;   
-//     // 개발환경이면 에러를 출력하고 아니면 출력하지 않기
-//     res.locals.error = process.env.NODE_ENV !== 'production' ? err : {}; 
-//     res.status(err.data.status).send(response(err.data));
-// });
-
-//9주차
-app.use((err, req, res, next) => {
-
-    //console.log(err.data.status);
-    //console.log(err.data.message);
-
-    // 템플릿 엔진 변수 설정
-    res.locals.message = err.message;   
-    // 개발환경이면 에러를 출력하고 아니면 출력하지 않기
-    res.locals.error = process.env.NODE_ENV !== 'production' ? err : {}; 
-    console.log("error", err);
-    res.status(err.data.status || status.INTERNAL_SERVER_ERROR).send(response(err.data));
+  // executeQuery 함수 호출
+  await executeQuery(query, res);
 });
 
+// mission 라우터
+app.use("/review", reviewRouter);
+app.use("/store", storeRouter);
+app.use((err, req, res, next) => {
+  if (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
+// error handling
+app.use((req, res, next) => {
+  const err = new BaseError(status.NOT_FOUND);
+  next(err);
+});
+
+app.use((err, req, res, next) => {
+  console.log(err.data.status);
+  console.log(err.data.message);
+  res.locals.message = err.message;
+  res.locals.error = process.env.NODE_ENV !== "production" ? err : {};
+  res.status(err.data.status).send(response(err.data));
+});
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-})
+  console.log(`Example app listening on port ${port}`);
+});

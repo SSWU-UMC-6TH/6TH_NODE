@@ -16,6 +16,7 @@
     "express-async-handler": "^1.2.0",
     "http-status-codes": "^2.3.0",
     "mysql2": "^3.10.0",
+    "sequelize": "^6.37.3",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
