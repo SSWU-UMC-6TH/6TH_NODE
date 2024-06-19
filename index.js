@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import {reviewRouter} from './routes/reviews.route.js'
 import { missionRouter } from './routes/missions.route.js'
+import { status } from "../6TH_NODE/config/response.status.js"
 
 dotenv.config();    // .env 파일 사용 (환경 변수 관리)
 
@@ -19,13 +20,22 @@ app.use ('/reviews',reviewRouter);
 
 app.use ('/missions', missionRouter);
 
+// app.use((err, req, res, next) => {
+//     // 템플릿 엔진 변수 설정
+//     res.locals.message = err.message;   
+//     // 개발환경이면 에러를 출력하고 아니면 출력하지 않기
+//     res.locals.error = process.env.NODE_ENV !== 'production' ? err : {}; 
+//     console.log("error", err);
+//     res.status(err.data.status || status.INTERNAL_SERVER_ERROR).send(response(err.data));
+// });
+
+// 에러 핸들링 미들웨어
 app.use((err, req, res, next) => {
-    // 템플릿 엔진 변수 설정
-    res.locals.message = err.message;   
-    // 개발환경이면 에러를 출력하고 아니면 출력하지 않기
-    res.locals.error = process.env.NODE_ENV !== 'production' ? err : {}; 
-    console.log("error", err);
-    res.status(err.data.status || status.INTERNAL_SERVER_ERROR).send(response(err.data));
+    console.error(err.stack);
+    res.status(err.status || 500).send({
+        status: 'ERROR',
+        message: err.message || 'Internal Server Error'
+    });
 });
 
 app.listen(app.get('port'), () => {

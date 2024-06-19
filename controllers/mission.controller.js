@@ -3,7 +3,8 @@ import { status } from "../config/response.status.js";
 import { BaseError } from "../config/error.js";
 import { addMission } from "../services/mission.service.js"
 import {challengeMissionService } from "../services/mission.service.js"
-
+import { getStoreMissionsService } from "../services/mission.service.js";
+import { getMissionsOngoingService} from "../services/mission.service.js"
 export const addMissionStore = async ( req , res , next ) => {
    console.log("가게 미션 추가요청");
    console.log("storeId",req.params.storeId);
@@ -59,4 +60,31 @@ export const challengeMission = async (req, res, next) => {
 } catch (err) {
    throw new BaseError(status.BAD_REQUEST);
 }
+};
+
+export const getStoreMissions = async (req, res, next) => {
+   
+   const storeId = req.params.storeId;
+   const { page = 1, limit = 10 } = req.query;
+
+   try {
+      const missions = await getStoreMissionsService(storeId, page, limit);
+      res.send(response(status.SUCCESS, missions));
+   } catch (err) {
+      console.error("Error in getMyMissions:", err);
+      next(err); // 더 구체적인 에러 처리를 위해 next()로 전달
+   }
+};
+
+export const getMissionsOngoing = async (req, res, next) => {
+   const memberId = req.user.id; // Authenticate 미들웨어를 통해 얻은 사용자 ID
+   const { page = 1, limit = 10 } = req.query;
+
+   try {
+      const missions = await getMissionsOngoingService(memberId, page, limit);
+      res.send(response(status.SUCCESS, missions));
+      } catch (err) {
+      console.error("Error in getMissionsOngoing:", err);
+      next(err); // 더 구체적인 에러 처리를 위해 next()로 전달
+   }
 };
