@@ -1,110 +1,54 @@
-import express from "express";
-import dotenv from "dotenv";
-import { sequelize } from "./config/db.config.js";
+//const express = require('express')
+import express from 'express';
+import mysql from 'mysql2/promise';
+import cors from "cors";
 import { response } from "./config/response.js";
-import { tempRouter } from "./src/routes/temp.route.js";
-import { reviewRouter } from "./src/routes/review.route.js";
-import { storeRouter } from "./src/routes/store.route.js";
-import { missionRouter } from "./src/routes/mission.route.js";
-
 import { BaseError } from "./config/error.js";
 import { status } from "./config/response.status.js";
-import { swaggerSpec } from "./config/swagger.config.js";
-import SwaggerUi from "swagger-ui-express";
-
-dotenv.config();
-const port = process.env.PORT || 3000;
+//import { tempRouter } from './routes/tempRoute.js';
+//import { returnError } from './controllers/errorController.js';
+import { userRouter } from './src/routes/userRoute.js';
+import { storeRouter } from './src/routes/storeRoute.js';
+import { tempRouter } from './src/routes/tempRoute.js';
 const app = express();
-
-app.use(express.urlencoded({ extended: false }));
-app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(swaggerSpec));
-
-// in_progress 데이터 추출 쿼리
-const inProgressQuery = `
-  SELECT * FROM mission
-`;
-
-// success 데이터 추출 쿼리
-const successQuery = `
-  SELECT * FROM mission
-`;
-
-// executeQuery 함수 정의
-async function executeQuery(query, res) {
-  try {
-    const rows = await sequelize.query(query, {
-      type: sequelize.QueryTypes.SELECT,
-    });
-    res.send(rows);
-  } catch (err) {
-    console.error("Error executing query:", err);
-    res.status(500).send("Internal Server Error");
-  }
-}
-
-// server setting - view, static, body-parser etc..
+//const port = 3000;
 app.set("port", process.env.PORT || 3000);
-app.use(express.static("public"));
+import dotenv from "dotenv";
+dotenv.config();
+
+app.use(
+	express.urlencoded({
+		extended: false
+	})
+);
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(cors());
+app.use(express.static("public"));
 
-// router setting
-app.use("/temp", tempRouter);
-app.get("/", (req, res) => {
-    res.send("Hello World!");
-  });
-  
-  app.get("/another-route", (req, res) => {
-    res.send("This is another route");
-  });
-
-// missions 라우터
-app.get("/missions", async (req, res) => {
-  const status = req.query.status;
-
-  if (!status) {
-    res.status(400).send("Bad Request: 'status' parameter is missing");
-    return;
-  }
-
-  let query;
-  if (status === "in_progress") {
-    query = inProgressQuery;
-  } else if (status === "success") {
-    query = successQuery;
-  } else {
-    res.status(400).send("Bad Request: Invalid status value");
-    return;
-  }
-
-  // executeQuery 함수 호출
-  await executeQuery(query, res);
+export const db = mysql.createPool({
+	host:process.env.DB_HOST,
+	user:process.env.DB_USER,
+	password:process.env.DB_PW,
+	port: process.env.DB_PORT,
+	database: process.env.DB_NAME,
+	waitForConnections: true,
+	insecureAuth: true
 });
-
-// mission 라우터
-app.use("/review", reviewRouter);
+app.use("/temp",tempRouter);
+app.use("/user",userRouter);
 app.use("/store", storeRouter);
-app.use((err, req, res, next) => {
-  if (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error");
-  }
+app.get('/', (req, res) => {
+	//res.send('Hello World!testing nodemon....')
+	  res.send("testing");	
+  });
+app.get('/user/signin', (req,res) => {
+	res.sendFile(__dirname + "/public/signin.html");
+})
+app.get('/store/register', (req,res) => {
+	res.sendFile(__dirname + "/public/registerStore.html");
 });
 
-// error handling
-app.use((req, res, next) => {
-  const err = new BaseError(status.NOT_FOUND);
-  next(err);
-});
 
-app.use((err, req, res, next) => {
-  console.log(err.data.status);
-  console.log(err.data.message);
-  res.locals.message = err.message;
-  res.locals.error = process.env.NODE_ENV !== "production" ? err : {};
-  res.status(err.data.status).send(response(err.data));
-});
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+app.listen(app.get("port"), () => {
+  console.log(`Example app listening on port ${app.get("port")}`);
 });

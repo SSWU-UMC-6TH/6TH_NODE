@@ -1,23 +1,9 @@
-import { MissionService } from "../services/mission.service.js";
-import { MissionDTO } from "../dtos/mission.dto.js";
-const missionService = new MissionService();
+import { response } from "../../config/response.js";
+import { status } from "../../config/response.status.js";
 
-class MissionController {
-  async challengeMission(req, res) {
-    try {
-      const { store_id, reward, deadline, mission_spec } = req.body;
-      const missionDTO = new MissionDTO(
-        store_id,
-        reward,
-        deadline,
-        mission_spec
-      );
-      const newMission = await missionService.challengeMission(missionDTO);
-      res.status(201).json(newMission);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  }
-}
+import { missionService } from "../services/mission.service.js";
 
-export { MissionController };
+export const missionController = async (req, res, next) => {
+  console.log("미션 추가(도전)");
+  res.send(response(status.SUCCESS, await missionService(req.body)));
+};
