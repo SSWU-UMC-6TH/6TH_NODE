@@ -1,0 +1,120 @@
+openapi: 3.0.0
+info:
+  title: UMC Study API - Missions
+  version: 1.0.0
+  description: API for managing missions
+tags:
+  - name: Missions
+paths:
+  /missions/{storeId}:
+    post:
+      summary: Add a mission to a store
+      tags: [Missions]
+      parameters:
+        - in: path
+          name: storeId
+          required: true
+          description: ID of the store
+          schema:
+            type: integer
+      requestBody:
+        description: Mission data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reward:
+                  type: string
+                deadline:
+                  type: string
+                  format: date
+                mission_spec:
+                  type: string
+      responses:
+        200:
+          description: Mission added successfully
+        400:
+          description: Bad request
+  /missions/{missionId}/challenges:
+    post:
+      summary: Challenge a mission
+      tags: [Missions]
+      parameters:
+        - in: path
+          name: missionId
+          required: true
+          description: ID of the mission
+          schema:
+            type: integer
+      requestBody:
+        description: Challenge data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                memberId:
+                  type: integer
+                statusId:
+                  type: integer
+      responses:
+        200:
+          description: Mission challenged successfully
+        400:
+          description: Bad request
+  /missions/{storeId}/list:
+    get:
+      summary: Get missions for a store
+      tags: [Missions]
+      parameters:
+        - in: path
+          name: storeId
+          required: true
+          description: ID of the store
+          schema:
+            type: integer
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: List of missions for the store
+        500:
+          description: Internal server error
+  /missions/my/ongoing:
+    get:
+      summary: Get my ongoing missions
+      tags: [Missions]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: List of my ongoing missions
+        500:
+          description: Internal server error
+

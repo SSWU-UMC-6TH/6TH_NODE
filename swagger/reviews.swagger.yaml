@@ -1,0 +1,63 @@
+openapi: 3.0.0
+info:
+  title: UMC Study API - Reviews
+  version: 1.0.0
+  description: API for managing reviews
+tags:
+  - name: Reviews
+paths:
+  /reviews/{storeId}:
+    post:
+      summary: Add a review for a store
+      tags: [Reviews]
+      parameters:
+        - in: path
+          name: storeId
+          required: true
+          description: ID of the store
+          schema:
+            type: integer
+      requestBody:
+        description: Review data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                member_id:
+                  type: integer
+                body:
+                  type: string
+                score:
+                  type: number
+      responses:
+        200:
+          description: Review added successfully
+        400:
+          description: Bad request
+  /reviews/my:
+    get:
+      summary: Get my reviews
+      tags: [Reviews]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: List of my reviews
+        500:
+          description: Internal server error
+

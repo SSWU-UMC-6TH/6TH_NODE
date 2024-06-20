@@ -4,6 +4,11 @@ import dotenv from 'dotenv';
 import {reviewRouter} from './routes/reviews.route.js'
 import { missionRouter } from './routes/missions.route.js'
 import { status } from "../6TH_NODE/config/response.status.js"
+import { specs } from "./config/swagger.config.js";
+import SwaggerUi from "swagger-ui-express";
+
+
+
 
 dotenv.config();    // .env 파일 사용 (환경 변수 관리)
 
@@ -14,7 +19,8 @@ app.set('port', process.env.PORT || 3000)   // 서버 포트 지정
 app.use(cors());                            // cors 방식 허용
 app.use(express.static('public'));          // 정적 파일 접근
 app.use(express.json());                    // request의 본문을 json으로 해석할 수 있도록 함 (JSON 형태의 요청 body를 파싱하기 위함)
-app.use(express.urlencoded({extended: false})); // 단순 객체 문자열 형태로 본문 데이터 해석
+app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형태로 본문 데이터 해석
+app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(specs));
 
 app.use ('/reviews',reviewRouter);
 
